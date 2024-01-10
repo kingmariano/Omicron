@@ -2,3 +2,5 @@
 whisper
 .env
 database.json
+go.mod
+go.sum
