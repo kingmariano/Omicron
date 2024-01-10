@@ -1,9 +1,10 @@
 package main
 
 import (
-	"os"
 	"fmt"
+	"os"
 )
+
 func checkAndDeleteFile() {
 	if _, err := os.Stat("database.json"); err == nil {
 		err := os.Remove("database.json")

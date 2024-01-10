@@ -3,32 +3,30 @@ package main
 import (
 	"context"
 	"fmt"
-	"strings"
-    "google.golang.org/protobuf/proto"
+	"github.com/charlesozo/whisperbot/internal/database"
 	"go.mau.fi/whatsmeow"
 	waProto "go.mau.fi/whatsmeow/binary/proto"
-	"github.com/charlesozo/whisperbot/internal/database"
 	"go.mau.fi/whatsmeow/types"
+	"google.golang.org/protobuf/proto"
+	"strings"
 )
 
-func (cfg *waConfig) SendMessage(client *whatsmeow.Client, jid types.JID, contact database.Contact ) (whatsmeow.SendResponse, error){
+func (cfg *waConfig) SendMessage(client *whatsmeow.Client, jid types.JID, contact database.Contact) (whatsmeow.SendResponse, error) {
 
-	
 	fineName := fineTuneName(contact.FullName)
-	if fineName == ""{
+	if fineName == "" {
 		fineName = "Dear"
 	}
 	waMessage := fmt.Sprintf("Happy Christmas %v wishing you the best", fineName)
-	sendResponse , err := client.SendMessage(context.Background(), jid, &waProto.Message{
+	sendResponse, err := client.SendMessage(context.Background(), jid, &waProto.Message{
 		Conversation: proto.String(waMessage),
-		
 	})
 	if err != nil {
 		fmt.Printf("Unable to send Message %v", err)
 		return whatsmeow.SendResponse{}, err
-    }
+	}
 	return sendResponse, err
-      
+
 }
 
 func fineTuneName(name string) string {
