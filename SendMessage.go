@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/charlesozo/whisperbot/internal/database"
 	"go.mau.fi/whatsmeow"
 	waProto "go.mau.fi/whatsmeow/binary/proto"
 	"go.mau.fi/whatsmeow/types"
@@ -11,53 +10,28 @@ import (
 	"strings"
 )
 
-func (cfg *waConfig) SendMessage(client *whatsmeow.Client, jid types.JID, contact database.Contact) (whatsmeow.SendResponse, error) {
-
-	fineName := fineTuneName(contact.FullName)
-	if fineName == "" {
-		fineName = "Dear"
-	}
-	waMessage := fmt.Sprintf("Happy Christmas %v wishing you the best", fineName)
-	sendResponse, err := client.SendMessage(context.Background(), jid, &waProto.Message{
-		Conversation: proto.String(waMessage),
+func (cfg *waConfig) SendMessage(client *whatsmeow.Client, jid types.JID, username string) {
+	initialMessage := "Hey [User], how are you?"
+	fmt.Println("sending normal messages")
+	client.SendMessage(context.Background(), jid, &waProto.Message{
+		Conversation: proto.String(formatMessage(initialMessage, username)),
 	})
-	if err != nil {
-		fmt.Printf("Unable to send Message %v", err)
-		return whatsmeow.SendResponse{}, err
-	}
-	return sendResponse, err
 
 }
 
-func fineTuneName(name string) string {
-	lowerName := strings.ToLower(name)
-
-	if strings.Contains(lowerName, "dad") {
-		return "Mr Charles"
-	} else if strings.Contains(lowerName, "mom") {
-		return "Mrs Ogoamaka"
-	} else if strings.Contains(lowerName, "mr") {
-		words := strings.Fields(name)
-		if len(words) > 1 {
-			return "Mr " + words[1]
-		}
-	} else if strings.Contains(lowerName, "aunty") {
-		words := strings.Fields(name)
-		if len(words) > 1 {
-			return "Mrs " + words[1]
-		}
-	} else if strings.Contains(lowerName, "uncle") {
-		words := strings.Fields(name)
-		if len(words) > 1 {
-			return "Mr " + words[1]
-		}
+func (cfg *waConfig) SendOccasionalMessage(client *whatsmeow.Client, jid types.JID, username string) {
+	for dat := range cfg.resMessage {
+		fmt.Println("sending occasion messages")
+		client.SendMessage(context.Background(), jid, &waProto.Message{
+			Conversation: proto.String(formatMessage(dat.Body, username)),
+		})
 	}
+}
 
-	// For any other format, separate the string and return the first word
-	words := strings.Fields(name)
-	if len(words) > 0 {
-		return words[0]
+func formatMessage(messge string, username string) string {
+	if username == ""{
+		username = "dear"
 	}
-
-	return ""
+	formattedMessage := strings.Replace(messge, "[User]", username, -1)
+	return formattedMessage
 }
