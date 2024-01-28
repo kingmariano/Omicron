@@ -4,8 +4,8 @@ import (
 	// "context"
 	"database/sql"
 	"fmt"
-	"github.com/charlesozo/whisperbot/cron"
 	"github.com/charlesozo/whisperbot/internal/database"
+	"github.com/charlesozo/whisperbot/cron"
 	_ "github.com/lib/pq"
 	"log"
 	"os"
@@ -15,10 +15,8 @@ import (
 )
 
 type waConfig struct {
-	DB         *database.Queries
-	DBURL      string
-	Cron       *cron.CronStack
-	resMessage chan cron.Message
+	DB    *database.Queries
+	DBURL string
 }
 
 func main() {
@@ -33,13 +31,10 @@ func main() {
 	}
 	defer conn.Close()
 	queries := database.New(conn)
-	response := make(chan cron.Message)
-	cron := cron.NewCron()
+
 	wacfg := waConfig{
-		DB:         queries,
-		DBURL:      dbURL,
-		Cron:       cron,
-		resMessage: response,
+		DB:    queries,
+		DBURL: dbURL,
 	}
 	waclient, err := wacfg.waConnect()
 	if err != nil {
@@ -49,8 +44,7 @@ func main() {
 
 	fmt.Printf("Whatsapp is connected %v\n", waclient.IsConnected())
 	fmt.Printf("User is loggedIn %v\n", waclient.IsLoggedIn())
-	go wacfg.Cron.RunTask(wacfg.resMessage)
-
+	go cron.RunTask()
 	err = waclient.SendPresence("available")
 	if err != nil {
 		fmt.Printf("presence error: %v", err)

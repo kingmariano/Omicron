@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const createUnRegUsers = `-- name: CreateUnRegUsers :one
+const createUnRegUser = `-- name: CreateUnRegUser :one
 INSERT INTO Unregisteredusers(created_at, updated_at,whatsapp_number,display_name)
 VALUES (
 $1, 
@@ -21,15 +21,15 @@ $4
 RETURNING id, created_at, updated_at, whatsapp_number, display_name
 `
 
-type CreateUnRegUsersParams struct {
+type CreateUnRegUserParams struct {
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	WhatsappNumber string
 	DisplayName    string
 }
 
-func (q *Queries) CreateUnRegUsers(ctx context.Context, arg CreateUnRegUsersParams) (Unregistereduser, error) {
-	row := q.db.QueryRowContext(ctx, createUnRegUsers,
+func (q *Queries) CreateUnRegUser(ctx context.Context, arg CreateUnRegUserParams) (Unregistereduser, error) {
+	row := q.db.QueryRowContext(ctx, createUnRegUser,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 		arg.WhatsappNumber,
@@ -46,13 +46,13 @@ func (q *Queries) CreateUnRegUsers(ctx context.Context, arg CreateUnRegUsersPara
 	return i, err
 }
 
-const getUnRegUsers = `-- name: GetUnRegUsers :one
+const getUnRegUser = `-- name: GetUnRegUser :one
 SELECT id, created_at, updated_at, whatsapp_number, display_name FROM Unregisteredusers
 WHERE whatsapp_number = $1
 `
 
-func (q *Queries) GetUnRegUsers(ctx context.Context, whatsappNumber string) (Unregistereduser, error) {
-	row := q.db.QueryRowContext(ctx, getUnRegUsers, whatsappNumber)
+func (q *Queries) GetUnRegUser(ctx context.Context, whatsappNumber string) (Unregistereduser, error) {
+	row := q.db.QueryRowContext(ctx, getUnRegUser, whatsappNumber)
 	var i Unregistereduser
 	err := row.Scan(
 		&i.ID,
@@ -62,4 +62,37 @@ func (q *Queries) GetUnRegUsers(ctx context.Context, whatsappNumber string) (Unr
 		&i.DisplayName,
 	)
 	return i, err
+}
+
+const getUnRegUsers = `-- name: GetUnRegUsers :many
+SELECT id, created_at, updated_at, whatsapp_number, display_name FROM Unregisteredusers
+`
+
+func (q *Queries) GetUnRegUsers(ctx context.Context) ([]Unregistereduser, error) {
+	rows, err := q.db.QueryContext(ctx, getUnRegUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Unregistereduser
+	for rows.Next() {
+		var i Unregistereduser
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.WhatsappNumber,
+			&i.DisplayName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

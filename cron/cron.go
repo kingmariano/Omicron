@@ -6,8 +6,7 @@ import (
 	"log"
 	"net/http"
 	"time"
-     "context"
-	"github.com/robfig/cron/v3"
+ 	"github.com/robfig/cron/v3"
 )
 
 const BaseURL = "https://whisper-message-api.onrender.com/api/v1/messages/search"
@@ -19,11 +18,9 @@ type Message struct {
 	Body      string    `json:"body"`
 	ImageName string    `json:"image_name"`
 }
-type CronStack struct{
-	cron *cron.Cron
-}
+
 //resMessage chan<- Message
-func cronMessage(ctx context.Context, date string, resMessage chan Message){
+func cronMessage(date string, resMessage chan Message){
 	Client := &http.Client{}
 	fullURL := fmt.Sprintf("%s/%s", BaseURL, date)
 	request, err := http.NewRequest("GET", fullURL, nil)
@@ -49,32 +46,23 @@ func cronMessage(ctx context.Context, date string, resMessage chan Message){
 		
 	}
 	resMessage <- message
-
-	// select {
-	// case resMessage <- message:
-	// 	// Message sent successfully.
-	// 	return nil
-	// case <-ctx.Done():
-	// 	// Context done, handle cancellation or timeout.
-	// 	return ctx.Err()
-	// }
 	
 }
   
-func NewCron() *CronStack{
+
+func RunTask() {
 	c := cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
-	return &CronStack{cron: c}
-}
-func (c *CronStack) RunTask(response chan Message) {
 	fmt.Println("Run task would soon start")
-	ctx := context.Background()
-	c.cron.AddFunc("*/2 * * * *", func() {
+	response := make(chan Message)
+	c.AddFunc("*/2 * * * *", func() {
 		fmt.Println("This job runs every two minutes")
-		go cronMessage(ctx, "2024-02-14", response)
+		go cronMessage("2024-02-14", response)
 	})
 
 	// Start the cron scheduler
-	c.cron.Start()
-	defer c.cron.Stop()
-	
+	c.Start()
+	defer c.Stop()
+	for dat := range response {
+		fmt.Println(dat.Body)
+	}
 }

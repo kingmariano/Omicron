@@ -3,21 +3,23 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
-	"os"
-	"time"
 	"github.com/mdp/qrterminal"
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/store/sqlstore"
 	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/types/events"
 	waLog "go.mau.fi/whatsmeow/util/log"
+	"log"
+	"os"
+	"time"
 )
 
 var senderChan = make(chan types.JID)
 var usernameChan = make(chan string)
 var messageChan = make(chan []types.MessageID)
 var chatChan = make(chan types.JID)
+var senderNumberChan = make(chan string)
+
 func eventHandler(evt interface{}) {
 	switch v := evt.(type) {
 	case *events.Message:
@@ -40,7 +42,8 @@ func eventHandler(evt interface{}) {
 			senderChan <- v.Info.Sender
 			usernameChan <- v.Info.PushName
 			messageChan <- []types.MessageID{v.Info.ID}
-            chatChan <- v.Info.Chat
+			chatChan <- v.Info.Chat
+			senderNumberChan <- v.Info.Sender.User
 		}
 
 	}
@@ -53,12 +56,13 @@ func (cfg *waConfig) handleIncomingMessages(client *whatsmeow.Client) {
 		usernameJID := <-usernameChan
 		messageJID := <-messageChan
 		chatJID := <-chatChan
+		waNumber := <-senderNumberChan
 		// Perform concurrent task using the senderUser value
-        err := client.MarkRead(messageJID,time.Now(),chatJID, senderJID)
-		if err != nil{
+		err := client.MarkRead(messageJID, time.Now(), chatJID, senderJID)
+		if err != nil {
 			log.Printf("couldn't mark message as read %v", err)
 		}
-		cfg.SendMessage(client, senderJID, usernameJID)
+		cfg.SendMessage(client, senderJID, usernameJID, waNumber)
 
 		// ... Perform your task here ...
 	}
@@ -79,7 +83,7 @@ func (cfg *waConfig) waConnect() (*whatsmeow.Client, error) {
 	client := whatsmeow.NewClient(deviceStore, clientLog)
 	client.AddEventHandler(eventHandler)
 	go cfg.handleIncomingMessages(client)
-	
+
 	if client.Store.ID == nil {
 		// No ID stored, new login
 		qrChan, _ := client.GetQRChannel(context.Background())
