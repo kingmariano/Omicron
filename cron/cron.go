@@ -29,7 +29,7 @@ type Message struct {
 }
 
 // resMessage chan<- Message
-func cronMessage(date string, resMessage chan Message) {
+func cronMessage(ctx context.Context, date string, resMessage chan Message) error {
 	Client := &http.Client{}
 	fullURL := fmt.Sprintf("%s/%s", BaseURL, date)
 	request, err := http.NewRequest("GET", fullURL, nil)
@@ -54,7 +54,14 @@ func cronMessage(date string, resMessage chan Message) {
 		log.Fatal(err)
 
 	}
-	resMessage <- message
+	select {
+	case resMessage <- message:
+		// Message sent successfully.
+		return nil
+	case <-ctx.Done():
+		// Context done, handle cancellation or timeout.
+		return ctx.Err()
+	}
 
 }
 func FormatMessage(messge string, username string) string {
@@ -70,10 +77,21 @@ func RunTask(cli *whatsmeow.Client, db *database.Queries) {
 	c := cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
 	fmt.Println("Run task would soon start")
 	response := make(chan Message)
-	c.AddFunc("*/2 * * * *", func() {
+	_, err := c.AddFunc("0 0 * * *", func() {
 		fmt.Println("This job runs every two minutes")
-		go cronMessage("2024-02-14", response)
+		date := time.Now().UTC().Format("2024-02-14")
+		go func() {
+			err := cronMessage(context.Background(), date, response)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+		}()
 	})
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	// Start the cron scheduler
 	c.Start()
@@ -84,7 +102,7 @@ func RunTask(cli *whatsmeow.Client, db *database.Queries) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		imageBytes, err := os.ReadFile("./assets/" + dat.ImageName + ".jpg")
+		imageBytes, err := os.ReadFile("./assets/" + dat.ImageName)
 		if err != nil {
 			log.Fatalf("error reading images %v", err)
 		}
@@ -108,9 +126,12 @@ func RunTask(cli *whatsmeow.Client, db *database.Queries) {
 			}
 
 			jid := types.NewJID(user.WhatsappNumber, types.DefaultUserServer)
-			cli.SendMessage(context.Background(), jid, &waProto.Message{
+			_, err := cli.SendMessage(context.Background(), jid, &waProto.Message{
 				ImageMessage: imageMsg,
 			})
+			if err != nil {
+				log.Fatalf("couldn't send message %v", err)
+			}
 		}
 
 	}

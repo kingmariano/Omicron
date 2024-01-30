@@ -19,9 +19,13 @@ func (cfg *waConfig) SendMessage(client *whatsmeow.Client, jid types.JID, userna
 	_, err := cfg.DB.GetUnRegUser(context.Background(), waNumber)
 	if err != nil {
 		fmt.Println("This is first time user")
-		client.SendMessage(context.Background(), jid, &waProto.Message{
+		_, err := client.SendMessage(context.Background(), jid, &waProto.Message{
 			Conversation: proto.String(cron.FormatMessage(messageOne, username)),
 		})
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 		_, err = cfg.DB.CreateUnRegUser(context.Background(), database.CreateUnRegUserParams{
 			WhatsappNumber: waNumber,
 			CreatedAt:      time.Now().UTC(),
@@ -35,8 +39,12 @@ func (cfg *waConfig) SendMessage(client *whatsmeow.Client, jid types.JID, userna
 		return
 	}
 	fmt.Println("user already registered")
-	client.SendMessage(context.Background(), jid, &waProto.Message{
+	_, err = client.SendMessage(context.Background(), jid, &waProto.Message{
 		Conversation: proto.String(cron.FormatMessage(messageTwo, username)),
 	})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 }
