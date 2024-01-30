@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/charlesozo/whisperbot/cron"
 	"github.com/charlesozo/whisperbot/internal/database"
 	"go.mau.fi/whatsmeow"
 	waProto "go.mau.fi/whatsmeow/binary/proto"
 	"go.mau.fi/whatsmeow/types"
 	"google.golang.org/protobuf/proto"
-	"strings"
 	"time"
 )
 
@@ -20,7 +20,7 @@ func (cfg *waConfig) SendMessage(client *whatsmeow.Client, jid types.JID, userna
 	if err != nil {
 		fmt.Println("This is first time user")
 		client.SendMessage(context.Background(), jid, &waProto.Message{
-			Conversation: proto.String(formatMessage(messageOne, username)),
+			Conversation: proto.String(cron.FormatMessage(messageOne, username)),
 		})
 		_, err = cfg.DB.CreateUnRegUser(context.Background(), database.CreateUnRegUserParams{
 			WhatsappNumber: waNumber,
@@ -32,19 +32,11 @@ func (cfg *waConfig) SendMessage(client *whatsmeow.Client, jid types.JID, userna
 			fmt.Printf("error registering User %v", err)
 			return
 		}
-         return 
+		return
 	}
 	fmt.Println("user already registered")
 	client.SendMessage(context.Background(), jid, &waProto.Message{
-		Conversation: proto.String(formatMessage(messageTwo, username)),
+		Conversation: proto.String(cron.FormatMessage(messageTwo, username)),
 	})
 
-}
-
-func formatMessage(messge string, username string) string {
-	if username == "" {
-		username = "dear"
-	}
-	formattedMessage := strings.Replace(messge, "[User]", username, -1)
-	return formattedMessage
 }

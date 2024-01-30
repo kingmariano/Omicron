@@ -4,8 +4,8 @@ import (
 	// "context"
 	"database/sql"
 	"fmt"
-	"github.com/charlesozo/whisperbot/internal/database"
 	"github.com/charlesozo/whisperbot/cron"
+	"github.com/charlesozo/whisperbot/internal/database"
 	_ "github.com/lib/pq"
 	"log"
 	"os"
@@ -44,7 +44,7 @@ func main() {
 
 	fmt.Printf("Whatsapp is connected %v\n", waclient.IsConnected())
 	fmt.Printf("User is loggedIn %v\n", waclient.IsLoggedIn())
-	go cron.RunTask()
+	go cron.RunTask(waclient, wacfg.DB)
 	err = waclient.SendPresence("available")
 	if err != nil {
 		fmt.Printf("presence error: %v", err)
