@@ -5,13 +5,129 @@
 package database
 
 import (
+	"database/sql"
+	"database/sql/driver"
+	"fmt"
 	"time"
+
+	"github.com/google/uuid"
 )
 
-type Unregistereduser struct {
-	ID             int32
+type SubscriptionStatusEnum string
+
+const (
+	SubscriptionStatusEnumActive  SubscriptionStatusEnum = "Active"
+	SubscriptionStatusEnumExpired SubscriptionStatusEnum = "Expired"
+)
+
+func (e *SubscriptionStatusEnum) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = SubscriptionStatusEnum(s)
+	case string:
+		*e = SubscriptionStatusEnum(s)
+	default:
+		return fmt.Errorf("unsupported scan type for SubscriptionStatusEnum: %T", src)
+	}
+	return nil
+}
+
+type NullSubscriptionStatusEnum struct {
+	SubscriptionStatusEnum SubscriptionStatusEnum
+	Valid                  bool // Valid is true if SubscriptionStatusEnum is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullSubscriptionStatusEnum) Scan(value interface{}) error {
+	if value == nil {
+		ns.SubscriptionStatusEnum, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.SubscriptionStatusEnum.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullSubscriptionStatusEnum) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.SubscriptionStatusEnum), nil
+}
+
+type SubscriptionTierEnum string
+
+const (
+	SubscriptionTierEnumBasic     SubscriptionTierEnum = "Basic"
+	SubscriptionTierEnumPro       SubscriptionTierEnum = "Pro"
+	SubscriptionTierEnumFreeTrial SubscriptionTierEnum = "Free-Trial"
+)
+
+func (e *SubscriptionTierEnum) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = SubscriptionTierEnum(s)
+	case string:
+		*e = SubscriptionTierEnum(s)
+	default:
+		return fmt.Errorf("unsupported scan type for SubscriptionTierEnum: %T", src)
+	}
+	return nil
+}
+
+type NullSubscriptionTierEnum struct {
+	SubscriptionTierEnum SubscriptionTierEnum
+	Valid                bool // Valid is true if SubscriptionTierEnum is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullSubscriptionTierEnum) Scan(value interface{}) error {
+	if value == nil {
+		ns.SubscriptionTierEnum, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.SubscriptionTierEnum.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullSubscriptionTierEnum) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.SubscriptionTierEnum), nil
+}
+
+type Command struct {
+	ID          int32
+	CommandName string
+	Description string
+}
+
+type Subscription struct {
+	SubscriptionID     uuid.UUID
+	Userid             uuid.NullUUID
+	ExpiryDate         time.Time
+	SubscriptionStatus NullSubscriptionStatusEnum
+	SubscriptionTier   NullSubscriptionTierEnum
+}
+
+type Unvalidateduser struct {
+	ID             uuid.UUID
 	CreatedAt      time.Time
-	UpdatedAt      time.Time
 	WhatsappNumber string
 	DisplayName    string
+}
+
+type Validateduser struct {
+	Userid          uuid.UUID
+	UpdatedAt       time.Time
+	WhatsappNumber  string
+	DisplayName     string
+	Password        string
+	Email           string
+	Apikey          string
+	UpdatedUsername sql.NullBool
+	UpdatedPassword sql.NullBool
+	Loggedin        sql.NullBool
 }

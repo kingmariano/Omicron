@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta content="width=device-width, initial-scale= 1.0" name="viewport">
+<meta content="IE=edge" http-equiv="X-UA-Compatible">
+<meta content="ab9d5fa8bbef4158869102aae147993b-a2cf00f8d6314b45-0" name="sentry-trace">
+<title>
+ElephantSQL Console
+Whisper Bot
+</title>
+<style type="text/css">svg:not(:root).svg-inline--fa {
+  overflow: visible;
+}
+
+.svg-inline--fa {
+  display: inline-block;
+  font-size: inherit;
+  height: 1em;
+  overflow: visible;
+  vertical-align: -0.125em;
+}
+.svg-inline--fa.fa-lg {
+  vertical-align: -0.225em;
+}
+.svg-inline--fa.fa-w-1 {
+  width: 0.0625em;
+}
+.svg-inline--fa.fa-w-2 {
+  width: 0.125em;
+}
+.svg-inline--fa.fa-w-3 {
+  width: 0.1875em;
+}
+.svg-inline--fa.fa-w-4 {
+  width: 0.25em;
+}
+.svg-inline--fa.fa-w-5 {
+  width: 0.3125em;
+}
+.svg-inline--fa.fa-w-6 {
+  width: 0.375em;
+}
+.svg-inline--fa.fa-w-7 {
+  width: 0.4375em;
+}
+.svg-inline--fa.fa-w-8 {
+  width: 0.5em;
+}
+.svg-inline--fa.fa-w-9 {
+  width: 0.5625em;
+}
+.svg-inline--fa.fa-w-10 {
+  width: 0.625em;
+}
+.svg-inline--fa.fa-w-11 {
+  width: 0.6875em;
+}
+.svg-inline--fa.fa-w-12 {
+  width: 0.75em;
+}
+.svg-inline--fa.fa-w-13 {
+  width: 0.8125em;
+}
+.svg-inline--fa.fa-w-14 {
+  width: 0.875em;
+}
+.svg-inline--fa.fa-w-15 {
+  width: 0.9375em;
+}
+.svg-inline--fa.fa-w-16 {
+  width: 1em;
+}
+.svg-inline--fa.fa-w-17 {
+  width: 1.0625em;
+}
+.svg-inline--fa.fa-w-18 {
+  width: 1.125em;
+}
+.svg-inline--fa.fa-w-19 {
+  width: 1.1875em;
+}
+.svg-inline--fa.fa-w-20 {
+  width: 1.25em;
+}
+.svg-inline--fa.fa-pull-left {
+  margin-right: 0.3em;
+  width: auto;
+}
+.svg-inline--fa.fa-pull-right {
+  margin-left: 0.3em;
+  width: auto;
+}
+.svg-inline--fa.fa-border {
+  height: 1.5em;
+}
+.svg-inline--fa.fa-li {
+  width: 2em;
+}
+.svg-inline--fa.fa-fw {
+  width: 1.25em;
+}
+
+.fa-layers svg.svg-inline--fa {
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.fa-layers {
+  display: inline-block;
+  height: 1em;
+  position: relative;
+  text-align: center;
+  vertical-align: -0.125em;
+  width: 1em;
+}
+.fa-layers svg.svg-inline--fa {
+  -webkit-transform-origin: center center;
+          transform-origin: center center;
+}
+
+.fa-layers-counter, .fa-layers-text {
+  display: inline-block;
+  position: absolute;
+  text-align: center;
+}
+
+.fa-layers-text {
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  -webkit-transform-origin: center center;
+          transform-origin: center center;
+}
+
+.fa-layers-counter {
+  background-color: #ff253a;
+  border-radius: 1em;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  color: #fff;
+  height: 1.5em;
+  line-height: 1;
+  max-width: 5em;
+  min-width: 1.5em;
+  overflow: hidden;
+  padding: 0.25em;
+  right: 0;
+  text-overflow: ellipsis;
+  top: 0;
+  -webkit-transform: scale(0.25);
+          transform: scale(0.25);
+  -webkit-transform-origin: top right;
+          transform-origin: top right;
+}
+
+.fa-layers-bottom-right {
+  bottom: 0;
+  right: 0;
+  top: auto;
+  -webkit-transform: scale(0.25);
+          transform: scale(0.25);
+  -webkit-transform-origin: bottom right;
+          transform-origin: bottom right;
+}
+
+.fa-layers-bottom-left {
+  bottom: 0;
+  left: 0;
+  right: auto;
+  top: auto;
+  -webkit-transform: scale(0.25);
+          transform: scale(0.25);
+  -webkit-transform-origin: bottom left;
+          transform-origin: bottom left;
+}
+
+.fa-layers-top-right {
+  right: 0;
+  top: 0;
+  -webkit-transform: scale(0.25);
+          transform: scale(0.25);
+  -webkit-transform-origin: top right;
+          transform-origin: top right;
+}
+
+.fa-layers-top-left {
+  left: 0;
+  right: auto;
+  top: 0;
+  -webkit-transform: scale(0.25);
+          transform: scale(0.25);
+  -webkit-transform-origin: top left;
+          transform-origin: top left;
+}
+
+.fa-lg {
+  font-size: 1.3333333333em;
+  line-height: 0.75em;
+  vertical-align: -0.0667em;
+}
+
+.fa-xs {
+  font-size: 0.75em;
+}
+
+.fa-sm {
+  font-size: 0.875em;
+}
+
+.fa-1x {
+  font-size: 1em;
+}
+
+.fa-2x {
+  font-size: 2em;
+}
+
+.fa-3x {
+  font-size: 3em;
+}
+
+.fa-4x {
+  font-size: 4em;
+}
+
+.fa-5x {
+  font-size: 5em;
+}
+
+.fa-6x {
+  font-size: 6em;
+}
+
+.fa-7x {
+  font-size: 7em;
+}
+
+.fa-8x {
+  font-size: 8em;
+}
+
+.fa-9x {
+  font-size: 9em;
+}
+
+.fa-10x {
+  font-size: 10em;
+}
+
+.fa-fw {
+  text-align: center;
+  width: 1.25em;
+}
+
+.fa-ul {
+  list-style-type: none;
+  margin-left: 2.5em;
+  padding-left: 0;
+}
+.fa-ul > li {
+  position: relative;
+}
+
+.fa-li {
+  left: -2em;
+  position: absolute;
+  text-align: center;
+  width: 2em;
+  line-height: inherit;
+}
+
+.fa-border {
+  border: solid 0.08em #eee;
+  border-radius: 0.1em;
+  padding: 0.2em 0.25em 0.15em;
+}
+
+.fa-pull-left {
+  float: left;
+}
+
+.fa-pull-right {
+  float: right;
+}
+
+.fa.fa-pull-left,
+.fas.fa-pull-left,
+.far.fa-pull-left,
+.fal.fa-pull-left,
+.fab.fa-pull-left {
+  margin-right: 0.3em;
+}
+.fa.fa-pull-right,
+.fas.fa-pull-right,
+.far.fa-pull-right,
+.fal.fa-pull-right,
+.fab.fa-pull-right {
+  margin-left: 0.3em;
+}
+
+.fa-spin {
+  -webkit-animation: fa-spin 2s infinite linear;
+          animation: fa-spin 2s infinite linear;
+}
+
+.fa-pulse {
+  -webkit-animation: fa-spin 1s infinite steps(8);
+          animation: fa-spin 1s infinite steps(8);
+}
+
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+.fa-rotate-90 {
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=1)";
+  -webkit-transform: rotate(90deg);
+          transform: rotate(90deg);
+}
+
+.fa-rotate-180 {
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=2)";
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+.fa-rotate-270 {
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
+  -webkit-transform: rotate(270deg);
+          transform: rotate(270deg);
+}
+
+.fa-flip-horizontal {
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)";
+  -webkit-transform: scale(-1, 1);
+          transform: scale(-1, 1);
+}
+
+.fa-flip-vertical {
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)";
+  -webkit-transform: scale(1, -1);
+          transform: scale(1, -1);
+}
+
+.fa-flip-both, .fa-flip-horizontal.fa-flip-vertical {
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)";
+  -webkit-transform: scale(-1, -1);
+          transform: scale(-1, -1);
+}
+
+:root .fa-rotate-90,
+:root .fa-rotate-180,
+:root .fa-rotate-270,
+:root .fa-flip-horizontal,
+:root .fa-flip-vertical,
+:root .fa-flip-both {
+  -webkit-filter: none;
+          filter: none;
+}
+
+.fa-stack {
+  display: inline-block;
+  height: 2em;
+  position: relative;
+  width: 2.5em;
+}
+
+.fa-stack-1x,
+.fa-stack-2x {
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.svg-inline--fa.fa-stack-1x {
+  height: 1em;
+  width: 1.25em;
+}
+.svg-inline--fa.fa-stack-2x {
+  height: 2em;
+  width: 2.5em;
+}
+
+.fa-inverse {
+  color: #fff;
+}
+
+.sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.sr-only-focusable:active, .sr-only-focusable:focus {
+  clip: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  position: static;
+  width: auto;
+}
+
+.svg-inline--fa .fa-primary {
+  fill: var(--fa-primary-color, currentColor);
+  opacity: 1;
+  opacity: var(--fa-primary-opacity, 1);
+}
+
+.svg-inline--fa .fa-secondary {
+  fill: var(--fa-secondary-color, currentColor);
+  opacity: 0.4;
+  opacity: var(--fa-secondary-opacity, 0.4);
+}
+
+.svg-inline--fa.fa-swap-opacity .fa-primary {
+  opacity: 0.4;
+  opacity: var(--fa-secondary-opacity, 0.4);
+}
+
+.svg-inline--fa.fa-swap-opacity .fa-secondary {
+  opacity: 1;
+  opacity: var(--fa-primary-opacity, 1);
+}
+
+.svg-inline--fa mask .fa-primary,
+.svg-inline--fa mask .fa-secondary {
+  fill: black;
+}
+
+.fad.fa-inverse {
+  color: #fff;
+}</style><link href="ElephantSQL%20Console%20Whisper%20Bot_files/site.css" rel="stylesheet" type="text/css">
+<link href="ElephantSQL%20Console%20Whisper%20Bot_files/site_002.css" rel="stylesheet" type="text/css">
+<link href="ElephantSQL%20Console%20Whisper%20Bot_files/reactApp.css" rel="stylesheet" type="text/css">
+<link href="https://api.elephantsql.com/favicon.ico" rel="icon" type="image/x-icon">
+<link href="ElephantSQL%20Console%20Whisper%20Bot_files/css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="ElephantSQL%20Console%20Whisper%20Bot_files/vendor.0c11f266.js"></script><script type="text/javascript" src="ElephantSQL%20Console%20Whisper%20Bot_files/main.23a4baec.js"></script><script type="text/javascript" async="" src="ElephantSQL%20Console%20Whisper%20Bot_files/analytics.js"></script><script type="text/javascript" async="" src="ElephantSQL%20Console%20Whisper%20Bot_files/js"></script><script type="text/javascript" async="" src="ElephantSQL%20Console%20Whisper%20Bot_files/a"></script><script async="" src="ElephantSQL%20Console%20Whisper%20Bot_files/gtm.js"></script><script src="ElephantSQL%20Console%20Whisper%20Bot_files/sentry.js" type="text/javascript"></script>
+<script src="ElephantSQL%20Console%20Whisper%20Bot_files/app.js" type="text/javascript"></script>
+<script src="ElephantSQL%20Console%20Whisper%20Bot_files/reactApp.js" type="text/javascript"></script>
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PJPFMF4');
+</script>
+<meta http-equiv="origin-trial" content="AymqwRC7u88Y4JPvfIF2F37QKylC04248hLCdJAsh8xgOfe/dVJPV3XS3wLFca1ZMVOtnBfVjaCMTVudWM//5g4AAAB7eyJvcmlnaW4iOiJodHRwczovL3d3dy5nb29nbGV0YWdtYW5hZ2VyLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1RoaXJkUGFydHkiOnRydWV9"><style hs-beacon="active" data-styled-version="5.1.1"></style></head>
+<body class="" style="cursor: default;">
+<noscript>
+<iframe height='0' src='https://www.googletagmanager.com/ns.html?id=GTM-PJPFMF4' style='display:none;visibility:hidden' width='0'></iframe>
+</noscript>
+<div class="flex-box-container">
+<div class="sticky-top">
+<nav class="navbar navbar-light p-0" id="header-navbar">
+<div class="container-fluid" data-base-url="https://customer.elephantsql.com" data-data-path="/header/api?id=528815" data-product="ElephantSQL" id="react-header-container"><a class="navbar-brand" href="https://customer.elephantsql.com/"><img class="service-logo" src="ElephantSQL%20Console%20Whisper%20Bot_files/service-logo.png"><div class="d-none d-sm-block">ElephantSQL</div></a><div class="mx-auto instance-dropdown dropdown"><button type="button" id="instance-dropdown" aria-expanded="false" class="dropdown-toggle btn btn-outline-secondary">Omicron Bot</button><div style="max-height: 600px; overflow-y: auto; position: absolute; inset: 0px auto auto 0px; transform: translate(632px, 52px);" x-placement="bottom-start" class="dropdown-menu" aria-labelledby="instance-dropdown" data-popper-reference-hidden="false" data-popper-escaped="false" data-popper-placement="bottom-start"><a href="https://customer.elephantsql.com/instance" aria-selected="false" data-rr-ui-dropdown-item="" class="dropdown-item">List all instances</a><a href="https://customer.elephantsql.com/instance/create" aria-selected="false" data-rr-ui-dropdown-item="" class="dropdown-item">Create new instance</a><hr class="dropdown-divider" role="separator"><div class="dropdown-header" role="heading">Instances</div><a href="https://customer.elephantsql.com/instance/533394/sso?goto=/details" data-rr-ui-dropdown-item="" class="dropdown-item">Omicron Messages</a><a href="https://customer.elephantsql.com/instance/528815/sso?goto=/details" data-rr-ui-dropdown-item="" class="dropdown-item">Omicron Bot</a><a href="https://customer.elephantsql.com/instance/526823/sso?goto=/details" data-rr-ui-dropdown-item="" class="dropdown-item">WhatsappBot</a><a href="https://customer.elephantsql.com/instance/523269/sso?goto=/details" data-rr-ui-dropdown-item="" class="dropdown-item">CRM store</a><a href="https://customer.elephantsql.com/instance/521801/sso?goto=/details" data-rr-ui-dropdown-item="" class="dropdown-item">Book management store</a><a href="https://customer.elephantsql.com/instance/503907/sso?goto=/details" data-rr-ui-dropdown-item="" class="dropdown-item">MovieFeed</a></div></div><div class="dropdown"><a class="menu-toggle nav-link py-3 px-1 dropdown-toggle" id="user-dropdown" aria-expanded="false"><img class="profile" src="ElephantSQL%20Console%20Whisper%20Bot_files/83a9786aa04ec3f1888d28e763202938.jpeg" title="charlesozochukwu2004@gmail.com"><span>Charles-org</span></a><div x-placement="bottom-end" class="dropdown-menu dropdown-menu-end" aria-labelledby="user-dropdown" data-popper-reference-hidden="false" data-popper-escaped="false" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; transform: translate(-79px, 67px);"><span class="dropdown-item-text">charlesozochukwu2004@gmail.com</span><a href="https://customer.elephantsql.com/user/settings?api=1" data-rr-ui-dropdown-item="" class="dropdown-item"><i class="mr-1 fas fa-user-cog"></i>Account Settings</a><a href="https://customer.elephantsql.com/billing?api=1" data-rr-ui-dropdown-item="" class="dropdown-item"><i class="mr-1 fas fa-credit-card"></i>Billing<span class="badge rounded-circle bg-secondary ms-1"></span></a><a href="https://www.elephantsql.com/docs/index.html?api=1" data-rr-ui-dropdown-item="" class="dropdown-item"><i class="mr-1 fas fa-book"></i>Documentation</a><hr class="dropdown-divider" role="separator"><span class="dropdown-item-text">Teams</span><a href="https://customer.elephantsql.com/user/switch-team/d9eeae37-f48b-4d22-af3f-e52f7f6c1c94?api=1" data-rr-ui-dropdown-item="" class="active dropdown-item dropdown-item"><i class="mr-1 fas fa-undefined"></i>Charles-org</a><a href="https://customer.elephantsql.com/team?api=1" data-rr-ui-dropdown-item="" class="dropdown-item text-muted mt-3 dropdown-item"><i class="mr-1 fas fa-undefined"></i>Team Settings</a><a href="https://customer.elephantsql.com/user/create-team?api=1" data-rr-ui-dropdown-item="" class="dropdown-item text-muted dropdown-item"><i class="mr-1 fas fa-undefined"></i>Create New Team</a><hr class="dropdown-divider" role="separator"><a href="https://customer.elephantsql.com/logout?api=1" data-rr-ui-dropdown-item="" class="dropdown-item"><i class="mr-1 fas fa-door-open"></i>Log out</a></div></div><div id="react-notifications-container"><div class="notification-component-wrapper"><button class="noti-tab-box py-3 is-closed"><svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="bell" class="svg-inline--fa fa-bell fa-w-14 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M439.39 362.29c-19.32-20.76-55.47-51.99-55.47-154.29 0-77.7-54.48-139.9-127.94-155.16V32c0-17.67-14.32-32-31.98-32s-31.98 14.33-31.98 32v20.84C118.56 68.1 64.08 130.3 64.08 208c0 102.3-36.15 133.53-55.47 154.29-6 6.45-8.66 14.16-8.61 21.71.11 16.4 12.98 32 32.1 32h383.8c19.12 0 32-15.6 32.1-32 .05-7.55-2.61-15.27-8.61-21.71zM67.53 368c21.22-27.97 44.42-74.33 44.53-159.42 0-.2-.06-.38-.06-.58 0-61.86 50.14-112 112-112s112 50.14 112 112c0 .2-.06.38-.06.58.11 85.1 23.31 131.46 44.53 159.42H67.53zM224 512c35.32 0 63.97-28.65 63.97-64H160.03c0 35.35 28.65 64 63.97 64z"></path></svg></button><div class="notifications-panel"><div class="notifications-panel-wrapper width collapse" style=""><div class="notifications-panel-header-box"><h6 class="header-text d-inline"> Notifications </h6><button type="button" class="btn-sm btn btn-cloud">Dismiss all</button></div><div class="notifications-panel-body-box"><div class="noti-wrapper"><div class="toast-container position-relative noti"><p class="header-text no-message">No new notifications</p></div></div></div></div></div></div></div><div class="d-none d-sm-block"><div></div></div></div>
+</nav>
+</div>
+<div class="sidebar-wrapper">
+<style>
+  .mgmt-button {
+    margin: 10px 0px 0px 15px;
+    width: 219px;
+  }
+</style>
+<nav class="sidebar">
+<ul class="list-unstyled components">
+<li class="">
+<a class="loader-link" href="https://api.elephantsql.com/console/6625cca5-1eb5-4735-a10f-7d1c5439101b/details?">
+Details
+</a>
+</li>
+<li class="hidden-xs">
+<a class="loader-link" href="https://api.elephantsql.com/console/6625cca5-1eb5-4735-a10f-7d1c5439101b/alarms?">
+<i class="fas fa-lock"></i>
+Alarms
+</a>
+</li>
+<li class="active">
+<a class="loader-link" href="https://api.elephantsql.com/console/6625cca5-1eb5-4735-a10f-7d1c5439101b/browser?">
+Browser
+</a>
+</li>
+<li class="">
+<a class="loader-link" href="https://api.elephantsql.com/console/6625cca5-1eb5-4735-a10f-7d1c5439101b/stats?">
+Stats
+</a>
+</li>
+<li class="">
+<a class="loader-link" href="https://api.elephantsql.com/console/6625cca5-1eb5-4735-a10f-7d1c5439101b/queries?">
+Slow Queries
+</a>
+</li>
+<li class="">
+<a class="loader-link" href="https://api.elephantsql.com/console/6625cca5-1eb5-4735-a10f-7d1c5439101b/backup?">
+Backup
+</a>
+</li>
+<li class="hidden-xs">
+<a class="loader-link" href="https://api.elephantsql.com/console/6625cca5-1eb5-4735-a10f-7d1c5439101b/log?">
+<i class="fas fa-lock"></i>
+Log
+</a>
+</li>
+<li class="hidden-xs">
+<a class="loader-link" href="https://api.elephantsql.com/console/6625cca5-1eb5-4735-a10f-7d1c5439101b/metrics?">
+<i class="fas fa-lock"></i>
+Metrics
+</a>
+</li>
+<li class="hidden-xs">
+<a class="loader-link" href="https://api.elephantsql.com/console/6625cca5-1eb5-4735-a10f-7d1c5439101b/admin?">
+<i class="fas fa-lock"></i>
+Admin
+</a>
+</li>
+<li class="hidden-xs">
+<a class="loader-link" href="https://api.elephantsql.com/console/6625cca5-1eb5-4735-a10f-7d1c5439101b/integrations?">
+<i class="fas fa-lock"></i>
+Integrations
+</a>
+</li>
+<li class="hidden-xs">
+<a class="loader-link" href="https://api.elephantsql.com/console/6625cca5-1eb5-4735-a10f-7d1c5439101b/firewall?">
+<i class="fas fa-lock"></i>
+Firewall
+</a>
+</li>
+<li class="">
+<a class="loader-link" href="https://api.elephantsql.com/console/6625cca5-1eb5-4735-a10f-7d1c5439101b/maintenance?">
+Maintenance
+</a>
+</li>
+</ul>
+</nav>
+
+<section class="main loader-wrapper">
+<div class="sidebar-main-wrapper">
+<button class="btn navbar-btn" id="sidebar-collapse" type="button">
+<i class="fas fa-bars"></i>
+</button>
+<div class="sticky-top">
+</div>
+<div class="row">
+<div class="col-md-12">
+<div class="col-sm-3 float-end">
+<form method="get">
+<select class="form-select" id="db_name" name="db_name" style="width: 100%;">
+<option selected="selected">rxadtjzg</option>
+</select>
+<script>
+  $('#db_name').on('change', function () {
+    showLoader();
+    $(this).closest('form').submit();
+  })
+</script>
+</form>
+</div>
+
+<h2>SQL Browser</h2>
+</div>
+</div>
+<div class="row">
+<div class="col-md-12">
+<div class="cloud-box">
+<form class="form-horizontal" id="query-form" method="post" data-gtm-form-interact-id="0">
+<input type="hidden" name="authenticity_token" value="GTONxZoWpkWBROd1MoimC4qvK-LqcpJ0EPvjKgJP-v0XzzfAu1hUE24isdHhw_IwrQC-DpvLHioXCCGbrHmfKw==">
+<fieldset>
+<input name="db_name" type="hidden" value="rxadtjzg">
+<div class="row mb-3">
+<div class="col-xs-12">
+<textarea class="form-control" id="query" name="query" placeholder="SQL Query" rows="2" spellcheck="false" data-gtm-form-interact-field-id="0">INSERT
+ INTO COMMANDS(command_name,description) VALUES("/help", "Explore 
+omicron features by typing any of these commands\n👉*/generate-image*: 
+Generate unique and creative images based on your prompt.\n👉 
+*/generate-video*: Generate High Quality video based on your prompt. 
+Transform your ideas to reality.\n👉 */transcribe-audio: Transcribe your
+ audio files with this command.\n
+👉 */text2speech*: Convert text into speech. Perfect for creating voice 
+message, audio books or adding narration to your project.\n👉 
+*/doc-interact*: This command helps you interact with your document, 
+such as summarizing a pdf file,generating questons from the document 
+etc.")</textarea>
+</div>
+</div>
+<div class="row mb-3">
+<div class="col-xs-12">
+<div class="dropdown-wrapper">
+<div class="dropdown">
+<button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" type="button">
+Table queries
+</button>
+<ul class="dropdown-menu">
+<li>
+<a class="dropdown-item table-link" data-relpages="0" data-reltuples="0.0" data-schema="public" data-table="commands" href="#">
+commands (public) (0 KiB, ~0 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="0" data-reltuples="0.0" data-schema="public" data-table="goose_db_version" href="#">
+goose_db_version (public) (0 KiB, ~0 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="0" data-reltuples="0.0" data-schema="public" data-table="subscription" href="#">
+subscription (public) (0 KiB, ~0 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="0" data-reltuples="0.0" data-schema="public" data-table="unvalidatedusers" href="#">
+unvalidatedusers (public) (0 KiB, ~0 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="0" data-reltuples="0.0" data-schema="public" data-table="validatedusers" href="#">
+validatedusers (public) (0 KiB, ~0 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="32" data-reltuples="1525.0" data-schema="public" data-table="whatsmeow_app_state_mutation_macs" href="#">
+whatsmeow_app_state_mutation_macs (public) (128 KiB, ~1525 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="0" data-reltuples="0.0" data-schema="public" data-table="whatsmeow_app_state_sync_keys" href="#">
+whatsmeow_app_state_sync_keys (public) (0 KiB, ~0 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="1" data-reltuples="5.0" data-schema="public" data-table="whatsmeow_app_state_version" href="#">
+whatsmeow_app_state_version (public) (4 KiB, ~5 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="0" data-reltuples="0.0" data-schema="public" data-table="whatsmeow_chat_settings" href="#">
+whatsmeow_chat_settings (public) (0 KiB, ~0 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="11" data-reltuples="697.0" data-schema="public" data-table="whatsmeow_contacts" href="#">
+whatsmeow_contacts (public) (44 KiB, ~697 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="0" data-reltuples="0.0" data-schema="public" data-table="whatsmeow_device" href="#">
+whatsmeow_device (public) (0 KiB, ~0 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="3" data-reltuples="147.0" data-schema="public" data-table="whatsmeow_identity_keys" href="#">
+whatsmeow_identity_keys (public) (12 KiB, ~147 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="0" data-reltuples="0.0" data-schema="public" data-table="whatsmeow_message_secrets" href="#">
+whatsmeow_message_secrets (public) (0 KiB, ~0 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="4" data-reltuples="139.0" data-schema="public" data-table="whatsmeow_pre_keys" href="#">
+whatsmeow_pre_keys (public) (16 KiB, ~139 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="3" data-reltuples="112.0" data-schema="public" data-table="whatsmeow_privacy_tokens" href="#">
+whatsmeow_privacy_tokens (public) (12 KiB, ~112 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="14" data-reltuples="134.0" data-schema="public" data-table="whatsmeow_sender_keys" href="#">
+whatsmeow_sender_keys (public) (56 KiB, ~134 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="38" data-reltuples="147.0" data-schema="public" data-table="whatsmeow_sessions" href="#">
+whatsmeow_sessions (public) (152 KiB, ~147 rows)
+</a>
+</li>
+<li>
+<a class="dropdown-item table-link" data-relpages="0" data-reltuples="0.0" data-schema="public" data-table="whatsmeow_version" href="#">
+whatsmeow_version (public) (0 KiB, ~0 rows)
+</a>
+</li>
+</ul>
+</div>
+</div>
+<div class="dropdown-wrapper" style="left: 155px;">
+<div class="dropdown">
+<button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" type="button">
+Previous queries
+</button>
+<ul class="dropdown-menu scrollable-menu" id="previous-queries"><li><a class="table-link dropdown-item">SELECT * FROM COMMANDS;</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."plan" LIMIT 100</a></li><li><a class="table-link dropdown-item">INSERT INTO "public"."plan"(plan_name,description, price)<br>VALUES('Annual
+ Plan', 'Unlock the full potential of OMICRON with our YEARLY Plan! Gain
+ access to premium features and whole lots more', 49.99)</a></li><li><a class="table-link dropdown-item">INSERT INTO "public"."plan"(plan_name,description, price)<br>VALUES('Monthly
+ Plan', 'Unlock the full potential of OMICRON with our Monthly Plan! 
+Gain access to premium features and whole lots more', 7.99)</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."unregisteredusers" LIMIT 100</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."messages" LIMIT 100</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."messages"</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."users" LIMIT 100</a></li><li><a class="table-link dropdown-item">SELECT COUNT(*) FROM "public"."whatsmeow_contacts" </a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."whatsmeow_contacts" LIMIT 800</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."whatsmeow_contacts" LIMIT 100</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."whatsmeow_sessions" LIMIT 100</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."whatsmeow_chat_settings" LIMIT 100</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."whatsmeow_contacts" WHERE first_name != ''</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."whatsmeow_contacts" WHERE first_name != '' LIMIT 100</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."users" WHERE username = 'charles' LIMIT 100</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."books" <br>WHERE id = 2<br>LIMIT 100;</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."books" <br><br>LIMIT 100;</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."books" <br>WHERE id = 1<br>LIMIT 100;</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."books" WHERE id = 1  LIMIT 100</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."books" LIMIT 100</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."books"  LIMIT 100</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."books" WHERE id = 1 LIMIT 100</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."goose_db_version" LIMIT 100</a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."whatsmeow_contacts" LIMIT 100 </a></li><li><a class="table-link dropdown-item">SELECT * FROM "public"."whatsmeow_contacts" LIMIT 200</a></li></ul>
+</div>
+</div>
+<div class="float-end">
+<button class="btn btn-primary" type="submit">
+Execute
+<i class="fas fa-play"></i>
+</button>
+</div>
+</div>
+</div>
+</fieldset>
+<div id="result">
+<div class="" id="no-rows" style="text-align: center">
+No rows returned
+</div>
+<div id="result-error"></div>
+<div class="table-responsive">
+<table class="table">
+<thead></thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+</form>
+</div>
+</div>
+</div>
+<style>
+  #query, #previous-queries {
+    font-family: Monaco,Menlo,Consolas,"Courier New",monospace;
+  }
+  
+  #result .table>tbody>tr>td,
+  #result .table>tbody>tr>th,
+  #result .table>tfoot>tr>td,
+  #result .table>tfoot>tr>th,
+  #result .table>thead>tr>td,
+  #result .table>thead>tr>th{
+    max-width: 400px;
+    word-wrap: break-word;
+  }
+  
+  #previous-queries {
+    max-width: 100%;
+  }
+  #previous-queries>li>a{
+    white-space: pre-wrap;
+  }
+  #previous-queries>li>a:hover {
+    cursor: pointer;
+  }
+  .scrollable-menu {
+    height: auto;
+    max-height: 300px;
+    overflow-x: hidden;
+  }
+  
+  .dropdown-wrapper {
+    position: absolute;
+    left: 15px;
+    right: 115px;
+  }
+</style>
+<script>
+  $('.table-link').on('click', function() {
+    $('#query').val("SELECT * FROM \"" +
+      $(this).data("schema") + "\".\"" +
+      $(this).data("table") + "\" " +
+      "LIMIT 100");
+  });
+  var $qform = $('#query-form');
+  var result = document.querySelector('#result');
+  var resultError = result.querySelector('#result-error');
+  var noRows = result.querySelector('#no-rows');
+  var thead = result.querySelector('thead');
+  var tbody = result.querySelector('tbody');
+  var queryBox = document.getElementById('query');
+  var previousQueries = document.getElementById('previous-queries');
+  
+  function insertQueryInQueryBox(query) {
+    queryBox.value = query;
+  }
+  
+  function addQueriesToPreviousQueries(queries) {
+    previousQueries.innerHTML = "";
+    queries.forEach((item) => {
+      let listItem = document.createElement("li");
+      previousQueries.append(listItem);
+  
+      let link = document.createElement("a");
+      link.classList.add("table-link", "dropdown-item");
+      link.innerText = item;
+      link.onclick = () => insertQueryInQueryBox(item);
+      listItem.appendChild(link);
+    })
+  }
+  function retrieveQueriesFromLocalStorage(){
+    let result = JSON.parse(localStorage.getItem("elephantsql-queries"));
+    if (result) {
+      return result;
+    }
+    else {
+      return [];
+    }
+  }
+  let queries = retrieveQueriesFromLocalStorage();
+  
+  function addQueryToLocalStorage(query){
+    console.log(query);
+    let queryIndex = queries.findIndex( (item) => {
+      return item === query;
+    });
+  
+    if(queryIndex >= 0)
+      queries.splice(queryIndex, 1);
+  
+    queries.unshift(query);
+    queries = queries.slice(0, 100);
+    console.log(queries);
+    localStorage.setItem("elephantsql-queries", JSON.stringify(queries));
+    addQueriesToPreviousQueries(queries);
+  }
+  
+  addQueriesToPreviousQueries(queries);
+  
+  $qform.on('submit', function(e) {
+    var last_response_len = false, error = false;
+    resultError.innerHTML = '';
+    noRows.classList.add('d-none');
+    tbody.innerHTML = '';
+    thead.innerHTML = '';
+    e.preventDefault();
+    $("body").css("cursor", "progress");
+    $(".btn-primary", e.target).attr("disabled", "disabled")
+    $.ajax({
+        type: $qform.attr('method'),
+        url: $qform.attr('action'),
+        data: $qform.serialize(),
+        xhrFields: {
+          onprogress: function(e) {
+            var this_response, response = e.currentTarget.response, parts, headers;
+            if (last_response_len === false) {
+                headers = true;
+                this_response = response;
+                last_response_len = response.length;
+            } else {
+                this_response = response.substring(last_response_len);
+                last_response_len = response.length;
+            }
+            parts = this_response.split(/\n/);
+            parts.forEach(function (part) {
+              if (!part) {
+                return;
+              }
+              var data = JSON.parse(part);
+              var key = Object.keys(data)[0];
+              var tr = null;
+              if (key == 'row') {
+                if (headers) {
+                  tr = document.createElement('tr');
+                  Object.keys(data.row).forEach(function (col) {
+                    var th = document.createElement('th');
+                    th.innerText = col;
+                    tr.appendChild(th);
+                  })
+                  thead.appendChild(tr);
+                  headers = false;
+                }
+                tr = document.createElement('tr');
+                Object.values(data.row).forEach(function (val) {
+                  var td = document.createElement('td');
+                  td.innerText = val;
+                  tr.appendChild(td);
+                })
+                tbody.appendChild(tr);
+              } else if (key == 'error') {
+                let pre = document.createElement('pre');
+                pre.innerText = data.error.replace(/<br>/g,'\r\n');
+                resultError.appendChild(pre);
+                error = true;
+              }
+            });
+          }
+        },
+        success: function (data) {
+          if (error) {
+            flashNotify({type: 'error', message: 'Query failed'});
+          } else {
+            flashNotify({type: 'success', message: 'Query completed'});
+            addQueryToLocalStorage(queryBox.value);
+          }
+        },
+        error: function (data) {
+          flashNotify({type: 'error', message: 'Query failed'});
+        },
+        complete: function (data) {
+          $("body").css("cursor", "default");
+          $(".btn-primary", e.target).removeAttr("disabled")
+          if (!tbody.querySelectorAll('tr').length) {
+            noRows.classList.remove('d-none');
+          }
+        }
+    });
+  })
+</script>
+
+</div>
+</section>
+</div>
+<footer>
+<div class="container">
+<div class="row">
+<div class="col-xs-6 col-sm-4 col-md-3 rl-xs">
+<h4>Menu</h4>
+<ul class="quicklinks">
+<li>
+<a href="https://www.elephantsql.com/">Home</a>
+</li>
+<li>
+<a href="https://www.elephantsql.com/plans.html">Plans</a>
+</li>
+<li>
+<a href="https://www.elephantsql.com/docs.html">Documentation</a>
+</li>
+<li>
+<a href="https://www.elephantsql.com/blog/index.html">Blog</a>
+</li>
+<li>
+<a href="https://www.elephantsql.com/about_us.html">About</a>
+</li>
+</ul>
+</div>
+<div class="col-xs-6 col-sm-4 col-md-3">
+<h4>More</h4>
+<ul class="quicklinks">
+<li>
+<a href="https://status.elephantsql.com/" target="_new">Status</a>
+</li>
+<li>
+<a href="https://www.elephantsql.com/terms_of_service.html">Terms of Service</a>
+</li>
+<li>
+<a href="https://www.elephantsql.com/program_policies.html">Program Policies</a>
+</li>
+<li>
+<a href="https://www.elephantsql.com/privacy_policy.html">Privacy Policy</a>
+</li>
+<li>
+<a href="https://www.elephantsql.com/imprint.html">Imprint</a>
+</li>
+</ul>
+</div>
+<div class="col-xs-12 col-sm-4 col-md-3 col-md-offset-3 text-center support-call-out">
+<p class="logo">
+ElephantSQL
+</p>
+<a class="btn btn-xl btn-invert" href="https://www.elephantsql.com/support.html">Contact Support</a>
+<p class="opening-hours">Open 24 hours a day, 7 days a week</p>
+</div>
+</div>
+<div class="row">
+<div class="col-md-12 text-center">
+<hr style="margin: 10px;">
+<p style="margin: 0;">© Copyright 2012-2024 ElephantSQL. PostgreSQL and 
+the PostgreSQL Logo are trademarks of PostgreSQL Community Association 
+of Canada.</p>
+</div>
+</div>
+</div>
+</footer>
+
+</div>
+<form action="https://elephantsql-stream.herokuapp.com/notifications_update/read" id="notificationReadForm" method="post">
+<input type="hidden" name="authenticity_token" value="kZxCXVf7vMwciuyWgIj703ZkX3fhTzv7crt-mhOqhPqfYPhYdrVOmvPsujJTw6_oUcvKm5D2t6V1SLwrvZzhLA==">
+<input name="feedback_id" type="hidden" value="b712156040a690e0589e6df5c27b3040c861935a1c9b5305f4ebc9eee167a239">
+<input name="row" type="hidden">
+</form>
+<form action="https://elephantsql-stream.herokuapp.com/notifications_update/dismiss" id="notificationDismissForm" method="post">
+<input type="hidden" name="authenticity_token" value="fzgAj2LqGW_ybFRq2HOPXz8QEI_Uw959eg36lvPL5khxxLqKQ6TrOR0KAs4LONtkGL-FY6V6UiN9_jgnXf2Dng==">
+<input name="feedback_id" type="hidden" value="b712156040a690e0589e6df5c27b3040c861935a1c9b5305f4ebc9eee167a239">
+<input name="row" type="hidden">
+</form>
+
+<div class="modal fade" id="confirm-modal" role="dialog" tabindex="-1">
+<div class="modal-dialog" role="document">
+<form class="form-group row modal-content">
+<div class="modal-header">
+<h4 class="modal-title" id="confirm-title">Confirm</h4>
+<button aria-label="Close" class="btn-close float-end" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<p id="confirm-body">
+Are your sure?
+</p>
+<div class="form-control" id="pwd-confirm-form">
+<label class="col-sm-2 col-form-label">Password</label>
+<div class="col-sm-8">
+<input autocomplete="off" class="form-control" disabled="disabled" id="pwd-confirm" name="confirm_password" type="password">
+</div>
+</div>
+<div class="form-control txt-confirm">
+<label class="col-sm-2 col-form-label"></label>
+<div class="col-sm-8">
+<input autocomplete="off" class="form-control" disabled="disabled" name="confirm_text" type="text">
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+<button class="btn" id="confirm-button" type="submit">Confirm</button>
+</div>
+</form>
+</div>
+</div>
+
+<script>
+  if (false && true) {
+    $('input, textarea, :submit').prop('disabled', true);
+    $(window).on('beforeunload', function () {
+      $('.only-dedicated').remove();
+    })
+  }
+</script>
+<script>
+  $(document).ready(function () {
+    $('#sidebar-collapse').on('click', function () {
+      $('.sidebar').toggleClass('active');
+    });
+  });
+</script>
+<script>
+  feedback.bootstrap("https://elephantsql-stream.herokuapp.com/sse/feedback?token=eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2VtYWlsIjoiY2hhcmxlc296b2NodWt3dTIwMDRAZ21haWwuY29tIiwiZmVlZGJhY2tfaWQiOiJiNzEyMTU2MDQwYTY5MGUwNTg5ZTZkZjVjMjdiMzA0MGM4NjE5MzVhMWM5YjUzMDVmNGViYzllZWUxNjdhMjM5IiwiZXhwIjoxNzA5MDc4MTkxfQ.h2E83BVBz7WGzqyVuj0hQRpLd_JjzK5fgeUAAo5vpv4");
+</script>
+<script>
+  !function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e) }if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a }) },n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1) }(window,document,window.Beacon||function(){ });
+  window.Beacon('init', 'c52670fb-3881-4f3a-ae0d-18cfd3ef4826')
+</script>
+<script>
+  window.Beacon('identify', {
+    email: "charlesozochukwu2004@gmail.com",
+    signature: "bc1f6f62c0973b9a93d61a956f26a9642709b4a87e8e37d350173f906cf5e751"
+  })
+</script>
+
+
+<div id="beacon-container"><div class="hsds-beacon"><div class="Beacon"><div class="ContainerGradient-sc-62zoy-0 dkxqZi"></div><div class="ContainerFramecss__WrapperUI-sc-d7rzhh-0 iwDBWz BeaconContainer is-configDisplayRight"></div><div class="FabButtonFramecss__FabButtonFrameUI-sc-y1b4md-0 kqZQkx BeaconFabButtonFrame" style="border-radius: 60px; height: 60px; position: fixed; transform: scale(1); width: 60px; z-index: 1049;"><iframe title="Help Scout Beacon - Open" id="" allowtransparency="true" data-cy="FrameComponent"></iframe></div></div></div></div></body></html>

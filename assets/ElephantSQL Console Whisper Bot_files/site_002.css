@@ -1,0 +1,83 @@
+.dropdown.display-list li {
+  padding: 3px;
+}
+
+.api-access {
+  font-size: 10pt;
+  height: auto;
+  margin: 0 5px;
+}
+
+.api-access .octicon {
+  font-size: 14pt;
+}
+
+.api-access span {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 14px;
+}
+
+a.api-access {
+  color: #707070;
+  opacity: 0.6;
+}
+
+a.api-access:hover, a.api-access:active {
+  opacity: 1;
+  text-decoration: none;
+}
+
+#appharbor li { line-height: inherit; }
+
+.only-dedicated {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  cursor: not-allowed;
+}
+
+.only-dedicated .lead {
+  width: 100%;
+  text-align: center;
+  margin: 30vh auto;
+  color: white;
+  position: fixed;
+  text-shadow: 2px 2px black;
+}
+.scrollable_log {
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+.log_row td {
+  vertical-align: top;
+}
+.log_row .source_name {
+  color:  #B58900;
+}
+.log_row .program {
+  color: #258CCD;
+}
+.log_row .received_at,
+.log_row .source_name,
+.log_row .program {
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+tr.clickable:hover {
+  cursor:pointer;
+  background-color: #f4f4f4 !important;
+}
+
+.stream-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1500;
+  background-color: white;
+}

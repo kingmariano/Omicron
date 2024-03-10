@@ -8,91 +8,59 @@ package database
 import (
 	"context"
 	"time"
+
+	"github.com/google/uuid"
 )
 
-const createUnRegUser = `-- name: CreateUnRegUser :one
-INSERT INTO Unregisteredusers(created_at, updated_at,whatsapp_number,display_name)
+const createUser = `-- name: CreateUser :one
+INSERT INTO UnvalidatedUsers(id, created_at,whatsapp_number,display_name)
 VALUES (
 $1, 
 $2, 
 $3, 
 $4
 )
-RETURNING id, created_at, updated_at, whatsapp_number, display_name
+RETURNING id, created_at, whatsapp_number, display_name
 `
 
-type CreateUnRegUserParams struct {
+type CreateUserParams struct {
+	ID             uuid.UUID
 	CreatedAt      time.Time
-	UpdatedAt      time.Time
 	WhatsappNumber string
 	DisplayName    string
 }
 
-func (q *Queries) CreateUnRegUser(ctx context.Context, arg CreateUnRegUserParams) (Unregistereduser, error) {
-	row := q.db.QueryRowContext(ctx, createUnRegUser,
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (Unvalidateduser, error) {
+	row := q.db.QueryRowContext(ctx, createUser,
+		arg.ID,
 		arg.CreatedAt,
-		arg.UpdatedAt,
 		arg.WhatsappNumber,
 		arg.DisplayName,
 	)
-	var i Unregistereduser
+	var i Unvalidateduser
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.WhatsappNumber,
 		&i.DisplayName,
 	)
 	return i, err
 }
 
-const getUnRegUser = `-- name: GetUnRegUser :one
-SELECT id, created_at, updated_at, whatsapp_number, display_name FROM Unregisteredusers
+const getUserWhatsappNumber = `-- name: GetUserWhatsappNumber :one
+
+SELECT id, created_at, whatsapp_number, display_name FROM UnvalidatedUsers 
 WHERE whatsapp_number = $1
 `
 
-func (q *Queries) GetUnRegUser(ctx context.Context, whatsappNumber string) (Unregistereduser, error) {
-	row := q.db.QueryRowContext(ctx, getUnRegUser, whatsappNumber)
-	var i Unregistereduser
+func (q *Queries) GetUserWhatsappNumber(ctx context.Context, whatsappNumber string) (Unvalidateduser, error) {
+	row := q.db.QueryRowContext(ctx, getUserWhatsappNumber, whatsappNumber)
+	var i Unvalidateduser
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.WhatsappNumber,
 		&i.DisplayName,
 	)
 	return i, err
-}
-
-const getUnRegUsers = `-- name: GetUnRegUsers :many
-SELECT id, created_at, updated_at, whatsapp_number, display_name FROM Unregisteredusers
-`
-
-func (q *Queries) GetUnRegUsers(ctx context.Context) ([]Unregistereduser, error) {
-	rows, err := q.db.QueryContext(ctx, getUnRegUsers)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Unregistereduser
-	for rows.Next() {
-		var i Unregistereduser
-		if err := rows.Scan(
-			&i.ID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.WhatsappNumber,
-			&i.DisplayName,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }

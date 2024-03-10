@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/charlesozo/whisperbot/handler"
 	"github.com/mdp/qrterminal"
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/store/sqlstore"
@@ -44,6 +45,7 @@ func eventHandler(evt interface{}) {
 			messageChan <- []types.MessageID{v.Info.ID}
 			chatChan <- v.Info.Chat
 			senderNumberChan <- v.Info.Sender.User
+
 		}
 
 	}
@@ -51,21 +53,34 @@ func eventHandler(evt interface{}) {
 func (cfg *waConfig) handleIncomingMessages(client *whatsmeow.Client) {
 
 	for {
-		// Wait for messages from the eventHandler through the channel
-		senderJID := <-senderChan
-		usernameJID := <-usernameChan
-		messageJID := <-messageChan
-		chatJID := <-chatChan
-		waNumber := <-senderNumberChan
-		// Perform concurrent task using the senderUser value
-		err := client.MarkRead(messageJID, time.Now(), chatJID, senderJID)
-		if err != nil {
-			log.Printf("couldn't mark message as read %v", err)
+		waMessage := handler.WaClientMessage{
+			SenderJID:    <-senderChan,
+			UsernameJID:  <-usernameChan,
+			MessageJID:   <-messageChan,
+			ChatJID:      <-chatChan,
+			SenderNumber: <-senderNumberChan,
 		}
-		cfg.SendMessage(client, senderJID, usernameJID, waNumber)
+
+		// Mark message as read
+		err := client.MarkRead(waMessage.MessageJID, time.Now(), waMessage.ChatJID, waMessage.SenderJID)
+		if err != nil {
+			log.Fatalf("couldn't mark message as read %v", err)
+		}
+
+		_, err = cfg.DB.GetUserWhatsappNumber(context.Background(), waMessage.SenderNumber)
+		if err != nil {
+			// Handle New Users
+			if err = cfg.HandleNewUser(client, waMessage.SenderJID, waMessage.UsernameJID, waMessage.SenderNumber); err != nil {
+				log.Fatalf("error creating new user %v", err)
+			}
+			continue
+		}
+
+		cfg.SendMessage(client, waMessage.SenderJID, waMessage.UsernameJID, waMessage.SenderNumber)
 
 		// ... Perform your task here ...
 	}
+
 }
 
 func (cfg *waConfig) waConnect() (*whatsmeow.Client, error) {
@@ -83,7 +98,7 @@ func (cfg *waConfig) waConnect() (*whatsmeow.Client, error) {
 	client := whatsmeow.NewClient(deviceStore, clientLog)
 	client.AddEventHandler(eventHandler)
 	go cfg.handleIncomingMessages(client)
-
+	client.Store.ID = nil
 	if client.Store.ID == nil {
 		// No ID stored, new login
 		qrChan, _ := client.GetQRChannel(context.Background())

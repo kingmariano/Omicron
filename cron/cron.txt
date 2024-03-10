@@ -98,7 +98,7 @@ func RunTask(cli *whatsmeow.Client, db *database.Queries) {
 	defer c.Stop()
 	for dat := range response {
 		fmt.Println("task started")
-		users, err := db.GetUnRegUsers(context.Background())
+		users, err := db.GetUsersFeed(context.Background())
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -114,7 +114,7 @@ func RunTask(cli *whatsmeow.Client, db *database.Queries) {
 		for _, user := range users {
 
 			imageMsg := &waProto.ImageMessage{
-				Caption:  proto.String(FormatMessage(dat.Body, user.DisplayName)),
+				Caption:  proto.String(FormatMessage(dat.Body, user.WhatsappNumber)),
 				Mimetype: proto.String("image/png"), // replace this with the actual mime type
 				// you can also optionally add other fields like ContextInfo and JpegThumbnail here
 				Url:           &resp.URL,

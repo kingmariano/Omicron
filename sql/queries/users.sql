@@ -1,5 +1,5 @@
--- name: CreateUnRegUser :one
-INSERT INTO Unregisteredusers(created_at, updated_at,whatsapp_number,display_name)
+-- name: CreateUser :one
+INSERT INTO UnvalidatedUsers(id, created_at,whatsapp_number,display_name)
 VALUES (
 $1, 
 $2, 
@@ -7,10 +7,8 @@ $3,
 $4
 )
 RETURNING *;
+--
 
--- name: GetUnRegUser :one
-SELECT * FROM Unregisteredusers
+-- name: GetUserWhatsappNumber :one
+SELECT * FROM UnvalidatedUsers 
 WHERE whatsapp_number = $1;
-
--- name: GetUnRegUsers :many
-SELECT * FROM Unregisteredusers;
