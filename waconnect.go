@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/charlesozo/whisperbot/handler"
 	"github.com/mdp/qrterminal"
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/store/sqlstore"
@@ -12,16 +11,10 @@ import (
 	waLog "go.mau.fi/whatsmeow/util/log"
 	"log"
 	"os"
-	"time"
 )
 
-var senderChan = make(chan types.JID)
-var usernameChan = make(chan string)
-var messageChan = make(chan []types.MessageID)
-var chatChan = make(chan types.JID)
-var senderNumberChan = make(chan string)
-
 func eventHandler(evt interface{}) {
+	fmt.Println("event started")
 	switch v := evt.(type) {
 	case *events.Message:
 		if v.Info.Chat.Server == "s.whatsapp.net" {
@@ -40,49 +33,38 @@ func eventHandler(evt interface{}) {
 			fmt.Println("MediaType : ", v.Info.MediaType)
 			fmt.Println("Multicast : ", v.Info.Multicast)
 			fmt.Println("Info.Chat.Server : ", v.Info.Chat.Server)
-			senderChan <- v.Info.Sender
-			usernameChan <- v.Info.PushName
-			messageChan <- []types.MessageID{v.Info.ID}
-			chatChan <- v.Info.Chat
 			senderNumberChan <- v.Info.Sender.User
-
+			senderJIDChan <- v.Info.Sender
+			usernameChan <- v.Info.PushName
+			messageIDChan <- []types.MessageID{v.Info.ID}
+			chatJIDChan <- v.Info.Chat
+			messageChan <- v.Message
+			fmt.Println("message recieved")
 		}
 
 	}
 }
 func (cfg *waConfig) handleIncomingMessages(client *whatsmeow.Client) {
-
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	for {
-		waMessage := handler.WaClientMessage{
-			SenderJID:    <-senderChan,
-			UsernameJID:  <-usernameChan,
-			MessageJID:   <-messageChan,
-			ChatJID:      <-chatChan,
-			SenderNumber: <-senderNumberChan,
+		select {
+		case message := <-messageChan:
+			username := <-usernameChan
+			messageID := <-messageIDChan
+			chatJID := <-chatJIDChan
+			senderNumber := <-senderNumberChan
+			senderJID := <-senderJIDChan
+			fmt.Println("message has come")
+			cfg.HandleUsers(ctx, client, senderJID, username, chatJID, senderNumber, messageID, message)
+		case <-ctx.Done():
+			fmt.Println("Task cancelled")
+			return
+
 		}
 
-		// Mark message as read
-		err := client.MarkRead(waMessage.MessageJID, time.Now(), waMessage.ChatJID, waMessage.SenderJID)
-		if err != nil {
-			log.Fatalf("couldn't mark message as read %v", err)
-		}
-
-		_, err = cfg.DB.GetUserWhatsappNumber(context.Background(), waMessage.SenderNumber)
-		if err != nil {
-			// Handle New Users
-			if err = cfg.HandleNewUser(client, waMessage.SenderJID, waMessage.UsernameJID, waMessage.SenderNumber); err != nil {
-				log.Fatalf("error creating new user %v", err)
-			}
-			continue
-		}
-
-		cfg.SendMessage(client, waMessage.SenderJID, waMessage.UsernameJID, waMessage.SenderNumber)
-
-		// ... Perform your task here ...
 	}
-
 }
-
 func (cfg *waConfig) waConnect() (*whatsmeow.Client, error) {
 	dbLog := waLog.Stdout("Database", "DEBUG", true)
 	clientLog := waLog.Stdout("Client", "DEBUG", true)
@@ -98,7 +80,7 @@ func (cfg *waConfig) waConnect() (*whatsmeow.Client, error) {
 	client := whatsmeow.NewClient(deviceStore, clientLog)
 	client.AddEventHandler(eventHandler)
 	go cfg.handleIncomingMessages(client)
-	client.Store.ID = nil
+	// client.Store.ID = nil
 	if client.Store.ID == nil {
 		// No ID stored, new login
 		qrChan, _ := client.GetQRChannel(context.Background())
