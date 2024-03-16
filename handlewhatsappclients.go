@@ -23,16 +23,10 @@ type WaClient struct {
 type OmnicronUsers map[string]bool
 
 var (
-	senderJIDChan    = make(chan types.JID)
-	usernameChan     = make(chan string)
-	messageIDChan    = make(chan []types.MessageID)
-	chatJIDChan      = make(chan types.JID)
-	senderNumberChan = make(chan string)
-	messageChan      = make(chan *waProto.Message)
-	users            = make(OmnicronUsers) // Map to store user IDs
 	usersLock        sync.Mutex
 	wg               sync.WaitGroup // Mutex for concurrent map access
 )
+var users  = make(OmnicronUsers) 
 
 func (cfg *waConfig) HandleUsers(ctx context.Context, client *whatsmeow.Client, senderJID types.JID, username string, chatJID types.JID, senderNumber string, messageID []types.MessageID, message *waProto.Message){
 	usersLock.Lock()
