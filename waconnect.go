@@ -6,24 +6,44 @@ import (
 	"github.com/mdp/qrterminal"
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/store/sqlstore"
+	waProto "go.mau.fi/whatsmeow/binary/proto"
 	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/types/events"
 	waLog "go.mau.fi/whatsmeow/util/log"
 	"log"
 	"os"
-	"time"
+	"sync"
 )
 
-var senderChan = make(chan types.JID)
-var usernameChan = make(chan string)
-var messageChan = make(chan []types.MessageID)
-var chatChan = make(chan types.JID)
-var senderNumberChan = make(chan string)
+
+
+var senderJIDChan = make(chan types.JID,10)
+var usernameChan = make(chan string,10)
+var messageIDChan = make(chan []types.MessageID,10)
+var chatJIDChan = make(chan types.JID, 10)
+var senderNumberChan = make(chan string, 10)
+var messageChan = make(chan *waProto.Message,10)
 
 func eventHandler(evt interface{}) {
+	var (
+		usersLock sync.Mutex
+		wg        sync.WaitGroup // Mutex for concurrent map access
+	)
 	switch v := evt.(type) {
 	case *events.Message:
 		if v.Info.Chat.Server == "s.whatsapp.net" {
+			usersLock.Lock()
+			defer usersLock.Unlock()
+			wg.Add(1)
+			go func(senderJID types.JID, username string, messageID []types.MessageID, chatJID types.JID, senderNumber string, message *waProto.Message) {
+				defer wg.Done()
+				senderJIDChan <- senderJID
+				usernameChan <- username
+				messageIDChan <- messageID
+				chatJIDChan <- chatJID
+				senderNumberChan <- senderNumber
+				messageChan <- message
+			}(v.Info.Sender, v.Info.PushName, []types.MessageID{v.Info.ID}, v.Info.Chat, v.Info.Sender.User, v.Message)
 			fmt.Println("GetConversation : ", v.Message.GetConversation())
 			fmt.Println("Sender : ", v.Info.Sender)
 			fmt.Println("Sender Number : ", v.Info.Sender.User)
@@ -39,11 +59,12 @@ func eventHandler(evt interface{}) {
 			fmt.Println("MediaType : ", v.Info.MediaType)
 			fmt.Println("Multicast : ", v.Info.Multicast)
 			fmt.Println("Info.Chat.Server : ", v.Info.Chat.Server)
-			senderChan <- v.Info.Sender
-			usernameChan <- v.Info.PushName
-			messageChan <- []types.MessageID{v.Info.ID}
-			chatChan <- v.Info.Chat
-			senderNumberChan <- v.Info.Sender.User
+			// senderJIDChan <- v.Info.Sender
+			// usernameChan <- v.Info.PushName
+			// messageIDChan <- []types.MessageID{v.Info.ID}
+			// chatJIDChan <- v.Info.Chat
+			// senderNumberChan <- v.Info.Sender.User
+			// fmt.Println("channel passed in")
 		}
 
 	}
@@ -51,21 +72,32 @@ func eventHandler(evt interface{}) {
 func (cfg *waConfig) handleIncomingMessages(client *whatsmeow.Client) {
 
 	for {
-		// Wait for messages from the eventHandler through the channel
-		senderJID := <-senderChan
-		usernameJID := <-usernameChan
-		messageJID := <-messageChan
-		chatJID := <-chatChan
-		waNumber := <-senderNumberChan
-		// Perform concurrent task using the senderUser value
-		err := client.MarkRead(messageJID, time.Now(), chatJID, senderJID)
-		if err != nil {
-			log.Printf("couldn't mark message as read %v", err)
-		}
-		cfg.SendMessage(context.Background(), client, senderJID, usernameJID, waNumber)
+        // Receive incoming messages from channels
+        // For example:
+        senderJID := <-senderJIDChan
+        username := <-usernameChan
+        chatJID := <-chatJIDChan
+        senderNumber := <-senderNumberChan
+        messageID := <-messageIDChan
+        
 
-		// ... Perform your task here ...
-	}
+        // Create a context for each message
+        ctx, cancel := context.WithCancel(context.Background())
+        done := make(chan struct{})
+
+        // Start a goroutine to handle users concurrently
+        go cfg.HandleUsers(ctx, client, senderJID, username, chatJID, senderNumber, messageID, done)
+
+        // Use a select statement to wait for either the context to be canceled
+        // or the message to be processed
+        select {
+        case <-ctx.Done():
+            // Context canceled, stop the user processing
+            cancel()
+        case <-done:
+            // User processed, continue with the next message
+        }
+    }
 }
 
 func (cfg *waConfig) waConnect() (*whatsmeow.Client, error) {
@@ -83,7 +115,6 @@ func (cfg *waConfig) waConnect() (*whatsmeow.Client, error) {
 	client := whatsmeow.NewClient(deviceStore, clientLog)
 	client.AddEventHandler(eventHandler)
 	go cfg.handleIncomingMessages(client)
-	client.Store.ID = nil
 	if client.Store.ID == nil {
 		// No ID stored, new login
 		qrChan, _ := client.GetQRChannel(context.Background())
