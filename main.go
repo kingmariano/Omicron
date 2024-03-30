@@ -2,15 +2,17 @@ package main
 
 import (
 	// "context"
+	"context"
 	"database/sql"
 	"fmt"
-	"github.com/charlesozo/whisperbot/internal/database"
-	_ "github.com/lib/pq"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/charlesozo/whisperbot/internal/database"
+	_ "github.com/lib/pq"
 )
 
 type waConfig struct {
@@ -35,7 +37,9 @@ func main() {
 		DB:    queries,
 		DBURL: dbURL,
 	}
-	waclient, err := wacfg.waConnect()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	waclient, err := wacfg.waConnect(ctx)
 	if err != nil {
 		log.Panic(err)
 	}

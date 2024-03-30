@@ -101,7 +101,7 @@ func (ns NullSubscriptionTierEnum) Value() (driver.Value, error) {
 type Command struct {
 	ID          int32
 	CommandName string
-	Description string
+	Instruction string
 }
 
 type Subscription struct {

@@ -10,13 +10,15 @@ import (
 )
 
 const executeCommand = `-- name: ExecuteCommand :exec
-INSERT INTO COMMANDS(command_name,description) VALUES
+INSERT INTO COMMANDS(command_name,instruction) VALUES
 ('/generate-image','Enter text prompt to generate stunning and unique images. _ex:A peaceful sunset over a calm ocean, with vibrant colors reflecting in the water._'),
 ('/transcribe-audio', 'Upload the audio file you would like to transcribe or record sound using the whatsapp voice recorder. please note _audio music files are not supported. audio should be clear_'),
 ('/text2speech', 'Enter the text you want to convert to audio.'),
 ('/doc-interact', 'Upload document file ex _pdf, doc format_'),
-('/download-video','Type video url _eg: video.youtube.com_ that you wish to download; supports videos from youtube, twitter, instagram, facebook, tiktok, videmeo_'),
+('/download-video_url','Type video url _eg: video.youtube.com_ that you wish to download; supports videos from youtube, twitter, instagram, facebook, tiktok, videmeo_'),
 ('/video2audio','Upload video file you wish to convert to audio/mp3'),
+('/download-song', 'Search name of  song you wish to download to device'),
+('/download-movie', 'Search name of  movie or file you wish to download to device'),
 ('/search-song','Enter name of song or use the whatsapp voice recording feature to look up songs'),
 ('/find-location', 'Enter the phone number you want to lookup its current location. _eg: +1234567894_'),
 ('/verify', 'Enter your email address to begin verification process'),
@@ -27,4 +29,31 @@ INSERT INTO COMMANDS(command_name,description) VALUES
 func (q *Queries) ExecuteCommand(ctx context.Context) error {
 	_, err := q.db.ExecContext(ctx, executeCommand)
 	return err
+}
+
+const getCommands = `-- name: GetCommands :many
+Select id, command_name, instruction FROM COMMANDS
+`
+
+func (q *Queries) GetCommands(ctx context.Context) ([]Command, error) {
+	rows, err := q.db.QueryContext(ctx, getCommands)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Command
+	for rows.Next() {
+		var i Command
+		if err := rows.Scan(&i.ID, &i.CommandName, &i.Instruction); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

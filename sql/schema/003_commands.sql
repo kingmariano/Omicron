@@ -2,7 +2,7 @@
 CREATE TABLE Commands (
     id SERIAL PRIMARY KEY,
     command_name TEXT NOT NULL UNIQUE,
-    description TEXT NOT NULL
+    instruction TEXT NOT NULL
 );
 
 

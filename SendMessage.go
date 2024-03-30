@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"sync"
 	"time"
 
@@ -15,31 +16,34 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+var (
+	msg sync.Mutex
+	wg  sync.WaitGroup // Mutex for concurrent map access
+)
 
-func (cfg *waConfig) HandleNewUser(ctx context.Context, client *whatsmeow.Client, jid types.JID, username string, waNumber string)  {
-	var (
-		mu sync.Mutex
-		wg        sync.WaitGroup // Mutex for concurrent map access
-	) 
-	mu.Lock()
-	defer mu.Unlock()
-	// first time user introducing message
-		wg.Add(2)
-		go func () {
+func FormatMessage(message string, username string) string {
+	if username == "" {
+		username = "dear"
+	}
+	formattedMessage := strings.Replace(message, "[User]", username, -1)
+	return formattedMessage
+}
+
+func (cfg *waConfig) HandleNewUser(ctx context.Context, client *whatsmeow.Client, jid types.JID, username string, waNumber string) {
+
+	// first time user  message
+
+	for _, message := range NewUserMessages {
+		wg.Add(1)
+		msg := message
+		go func() {
 			defer wg.Done()
-			for _, message := range NewUserMessages {
-			_, err := client.SendMessage(ctx, jid, &waProto.Message{
-				Conversation: proto.String(FormatMessage(message, username)),
-			})
-			if err != nil {
-				log.Fatal("error sending message")
-				
-			}
-		}
-	}()
-		
-	
-		// Start a goroutine to create the user and subscription concurrently
+			cfg.SendMessage(ctx, client, jid, msg, username)
+		}()
+	}
+
+	// Start a goroutine to create the user and subscription concurrently
+	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		// Create the user
@@ -64,18 +68,35 @@ func (cfg *waConfig) HandleNewUser(ctx context.Context, client *whatsmeow.Client
 		}
 	}()
 
-	// Wait for both goroutines to finish
+	// Wait for all goroutines to finish
 	wg.Wait()
-	
 	fmt.Println("This is first time user")
+
 }
 
-func (cfg *waConfig) SendMessage(ctx context.Context, client *whatsmeow.Client, jid types.JID, username string, waNumber string) error{
-		_, err := client.SendMessage(ctx, jid, &waProto.Message{
-		Conversation: proto.String(FormatMessage(MessageUser, username)),
+func (cfg *waConfig) SendMessage(ctx context.Context, client *whatsmeow.Client, jid types.JID, message, username string)  {
+	msg.Lock()
+	defer msg.Unlock()
+	_, err := client.SendMessage(ctx, jid, &waProto.Message{
+		Conversation: proto.String(FormatMessage(message, username)),
 	})
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-	return nil
+}
+
+func SendCommandInstruction(ctx context.Context, client *whatsmeow.Client, jid types.JID, instruction string) {
+	_, err := client.SendMessage(ctx, jid, &waProto.Message{
+		Conversation: proto.String(instruction),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+func MarkMessageRead(client *whatsmeow.Client, chatJID types.JID, senderJID types.JID, messageID []types.MessageID) {
+	err := client.MarkRead(messageID, time.Now(), chatJID, senderJID)
+	if err != nil {
+		log.Fatalf("couldnt mark receipt as read %v", err)
+	}
 }
