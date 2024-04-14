@@ -42,7 +42,7 @@ func handleuserCommand(ctx context.Context, client *whatsmeow.Client, senderJID 
 		SendCommandInstruction(ctx, client, senderJID, DownloadMovieInstruction)
 		return
 
-	case "/dowload-apk":
+	case "/download-apk":
 		SendCommandInstruction(ctx, client, senderJID, DownloadAppInstruction)
 		return
 
@@ -61,7 +61,21 @@ func handleuserCommand(ctx context.Context, client *whatsmeow.Client, senderJID 
 	case "/help":
 		SendCommandInstruction(ctx, client, senderJID, HelpInstruction)
 		return
-
+    case "/youtube-summarize":
+		SendCommandInstruction(ctx, client, senderJID, YoutubeSummarizeInstruction)
+		return
+	case "/doc-interact":
+		SendCommandInstruction(ctx, client, senderJID, DocInteractInstruction)	
+		return
+	case "/compress-file":
+		SendCommandInstruction(ctx, client, senderJID, CompressFileInstruction)	
+		return
+    case "/convert-file":
+		SendCommandInstruction(ctx, client, senderJID, ConvertDocToDocInstruction)
+		return
+	case "translate-audio":
+		SendCommandInstruction(ctx, client, senderJID,TranscribeAudioInstruction)	
+		return
 	default:
 		SendCommandInstruction(ctx, client, senderJID, AIMessage)
 

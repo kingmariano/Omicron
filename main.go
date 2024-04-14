@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "context"
 	"context"
 	"database/sql"
 	"fmt"
@@ -10,7 +9,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
 	"github.com/charlesozo/whisperbot/internal/database"
 	_ "github.com/lib/pq"
 )
@@ -39,23 +37,45 @@ func main() {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+	
 	waclient, err := wacfg.waConnect(ctx)
 	if err != nil {
 		log.Panic(err)
 	}
-	waclient.WaitForConnection(10 * time.Second)
+	waclient.WaitForConnection(15 * time.Second)
 
 	fmt.Printf("Whatsapp is connected %v\n", waclient.IsConnected())
 	fmt.Printf("User is loggedIn %v\n", waclient.IsLoggedIn())
 	err = waclient.SendPresence("available")
 	if err != nil {
-		fmt.Printf("presence error: %v", err)
+		log.Print(err)
 	}
+    err = waclient.SetStatusMessage("new about me")
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	// userInput := make(chan string)
+
+    // go func() {
+    //     // Simulate user input
+    //     time.Sleep(30 * time.Second)
+    //    cancel()
+    // }()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	<-c
 
-	waclient.Disconnect()
+	select {
+		case <-c:
+			waclient.Disconnect()
+		case <-ctx.Done():
+			fmt.Printf("Context done: %v\n", ctx.Err())
+			log.Fatal("context cancelled from child")
+		
+	}
+	// <-c
+
+	// waclient.Disconnect()
 
 }

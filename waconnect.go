@@ -3,6 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"os"
+	"sync"
+
 	"github.com/mdp/qrterminal"
 	"go.mau.fi/whatsmeow"
 	waProto "go.mau.fi/whatsmeow/binary/proto"
@@ -10,80 +14,94 @@ import (
 	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/types/events"
 	waLog "go.mau.fi/whatsmeow/util/log"
-	"log"
-	"os"
-	"sync"
 )
 
-var senderJIDChan = make(chan types.JID, 10)
-var usernameChan = make(chan string, 10)
-var messageIDChan = make(chan []types.MessageID, 10)
-var chatJIDChan = make(chan types.JID, 10)
-var senderNumberChan = make(chan string, 10)
-var messageChan = make(chan *waProto.Message, 10)
-var usersLock sync.Mutex
+var (
+	userChannels     map[string]userChannel
+	userGoroutineMap sync.Map
+)
 
-func eventHandler(evt interface{}) {
-	switch v := evt.(type) {
-	case *events.Message:
-		if v.Info.Chat.Server == "s.whatsapp.net" {
-			// create a separate goroutine to process incoming messages from users
-			
-			go func() {
-				usersLock.Lock()
-				defer usersLock.Unlock()
-				senderJIDChan <- v.Info.Sender
-				usernameChan <- v.Info.PushName
-				messageIDChan <- []types.MessageID{v.Info.ID}
-				chatJIDChan <- v.Info.Chat
-				senderNumberChan <- v.Info.Sender.User
-				messageChan <- v.Message
-				fmt.Println("GetConversation : ", v.Message.GetConversation())
-				fmt.Println("Sender : ", v.Info.Sender)
-				fmt.Println("Sender Number : ", v.Info.Sender.User)
-				fmt.Println("IsGroup : ", v.Info.IsGroup)
-				fmt.Println("MessageSource : ", v.Info.MessageSource)
-				fmt.Println("ID : ", v.Info.ID)
-				fmt.Println("PushName : ", v.Info.PushName)
-				fmt.Println("BroadcastListOwner : ", v.Info.BroadcastListOwner)
-				fmt.Println("Category : ", v.Info.Category)
-				fmt.Println("Chat : ", v.Info.Chat)
-				fmt.Println("DeviceSentMeta : ", v.Info.DeviceSentMeta)
-				fmt.Println("IsFromMe : ", v.Info.IsFromMe)
-				fmt.Println("MediaType : ", v.Info.MediaType)
-				fmt.Println("Multicast : ", v.Info.Multicast)
-				fmt.Println("Info.Chat.Server : ", v.Info.Chat.Server)
-			}()
-         
+type keystore string
+
+const CTXErrMessage keystore = "errorMessage"
+
+type userChannel struct {
+	senderJID    types.JID
+	username     string
+	messageID    []types.MessageID
+	chatJID      types.JID
+	senderNumber string
+	messageChan  chan *waProto.Message
+}
+
+func init() {
+	userChannels = make(map[string]userChannel)
+}
+
+func GetEventHandler(client *whatsmeow.Client, cfg *waConfig, ctx context.Context) func(interface{}) {
+	return func(evt interface{}) {
+		switch v := evt.(type) {
+		case *events.Message:
+			if v.Info.Chat.Server == "s.whatsapp.net" {
+				// mark read for any message received.
+				go MarkMessageRead(client, v.Info.Chat, v.Info.Sender, []types.MessageID{v.Info.ID})
+				userChan, ok := userChannels[v.Info.Sender.User]
+				if !ok {
+					// this is a new User, hasnt yet been registered in the database.
+					userChan = userChannel{
+						senderJID:    v.Info.Sender,
+						username:     v.Info.PushName,
+						messageID:    []types.MessageID{v.Info.ID},
+						chatJID:      v.Info.Chat,
+						senderNumber: v.Info.Sender.User,
+						messageChan:  make(chan *waProto.Message, 10),
+					}
+					cfg.HandleNewUser(ctx, client, userChan.chatJID, userChan.senderJID, userChan.username, userChan.senderNumber)
+					fmt.Println("GetConversation : ", v.Message.GetConversation())
+					fmt.Println("Sender : ", userChan.senderJID)
+					fmt.Println("Sender Number : ", userChan.senderNumber)
+					// add the user to the map.
+					userChannels[v.Info.Sender.User] = userChan
+
+				} else {
+					// This not first user, send the message into the client channel struct.
+					userChan.messageChan <- v.Message
+					_, alreadyRunning := userGoroutineMap.Load(userChan.senderNumber)
+					if !alreadyRunning {
+						// create a new goroutine
+						go func() {
+							// Mark that a goroutine is now running for this senderNumber
+							userGoroutineMap.Store(userChan.senderNumber, true)
+							defer userGoroutineMap.Delete(userChan.senderNumber) // Remove the entry when the goroutine exits
+							handleClientIncomingMessage(client, ctx, userChan)
+						}()
+						log.Printf("created a new goroutine for %v", userChan.senderNumber)
+					} else {
+						log.Printf("goroutine is already running and doing work for %v", userChan.senderNumber)
+					}
+
+					}
+			}
+
 		}
 	}
 }
 
-func (cfg *waConfig) handleIncomingMessages(client *whatsmeow.Client, ctx context.Context) {
-	// create for loop to infinitely handle messages
-
+func handleClientIncomingMessage(client *whatsmeow.Client, ctx context.Context, user userChannel) {
+   log.Printf("I am the new goroutine for %v", user.senderNumber)
+	var msgLock sync.Mutex
+	msgLock.Lock()
+	defer msgLock.Unlock()
 	for {
-
-		// Use a select statement to wait for either the context to be canceled
-		// or the message to be processed
 		select {
-			//wait for when a message is sent over the channel.
-		case senderJID := <-senderJIDChan:
-			// assign the channels to their individual variable
-			senderNumber := <-senderNumberChan
-			username := <-usernameChan
-			chatJID := <-chatJIDChan
-			messageID := <-messageIDChan
-			// mark messages can be done in a separate goroutine in order to avoid blocking
-			// Mark message as read
-			go MarkMessageRead(client, chatJID, senderJID, messageID)
-			// handle User Messages concurrently
-			 go cfg.HandleUsers(ctx, client, senderJID, username, chatJID, senderNumber, messageID, messageChan)
+		case message := <-user.messageChan:
+			msg := message.GetConversation()
+			fmt.Println(msg)
+			handleuserCommand(ctx, client, user.senderJID, msg)
 		case <-ctx.Done():
-			// Context canceled, stop the user processing
-			fmt.Println("context is cancelled from parent")
-			continue
-			// User processed, continue with the next message
+			fmt.Println(ctx.Value(CTXErrMessage))
+			return
+
 		}
 	}
 }
@@ -101,8 +119,7 @@ func (cfg *waConfig) waConnect(ctx context.Context) (*whatsmeow.Client, error) {
 	}
 
 	client := whatsmeow.NewClient(deviceStore, clientLog)
-	client.AddEventHandler(eventHandler)
-	go cfg.handleIncomingMessages(client, ctx)
+	client.AddEventHandler(GetEventHandler(client, cfg, ctx))
 	if client.Store.ID == nil {
 		// No ID stored, new login
 		qrChan, _ := client.GetQRChannel(ctx)
